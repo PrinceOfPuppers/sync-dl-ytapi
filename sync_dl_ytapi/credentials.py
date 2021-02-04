@@ -98,14 +98,15 @@ def credentialManager(task):
     ###############
     elif task == credTask.logout:
         if os.path.exists(credPath):
-            credentials = getCredentials()
+            try:
+                credentials = getCredentials()
 
-            requests.post('https://oauth2.googleapis.com/revoke',
-                params={'token': credentials.token},
-                headers = {'content-type': 'application/x-www-form-urlencoded'})
+                requests.post('https://oauth2.googleapis.com/revoke',
+                    params={'token': credentials.token},
+                    headers = {'content-type': 'application/x-www-form-urlencoded'})
 
-
-            os.remove(credPath)
-            cfg.logger.info("Logged Out")
+            finally:
+                os.remove(credPath)
+                cfg.logger.info("Logged Out")
         else:
             cfg.logger.error("Not Logged In")

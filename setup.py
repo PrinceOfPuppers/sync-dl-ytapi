@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
     name="sync-dl-ytapi",
-    version="0.0.3",
+    version="0.1.1",
     author="Joshua McPherson",
     author_email="joshuamcpherson5@gmail.com",
     description="An addon for sync-dl, providing commands which utilize the youtube api",
