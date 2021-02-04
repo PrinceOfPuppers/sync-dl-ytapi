@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/PrinceOfPuppers/sync-dl-ytapi",
     packages=setuptools.find_packages(),
     include_package_data=True,
-    install_requires=['sync-dl','google-auth','google-auth-oauthlib','google-api-python-client','cryptography'],
+    install_requires=['sync-dl','requests','google-auth','google-auth-oauthlib','google-api-python-client','cryptography'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

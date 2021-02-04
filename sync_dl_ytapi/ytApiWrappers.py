@@ -4,8 +4,6 @@ from math import ceil
 
 import sync_dl.config as cfg
 
-from sync_dl_ytapi.newCredentials import getYTResource
-
 
 def getItemIds(youtube,plId):
     makeRequest = lambda pageToken: youtube.playlistItems().list(part = "contentDetails", playlistId = plId, pageToken = pageToken)

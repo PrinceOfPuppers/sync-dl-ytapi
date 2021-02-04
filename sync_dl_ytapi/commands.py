@@ -6,12 +6,15 @@ import shelve
 import sync_dl.config as cfg
 
 from sync_dl_ytapi.helpers import getPlId,pushOrderMoves
-from sync_dl_ytapi.ytApiWrappers import getYTResource,getItemIds,moveSong
+from sync_dl_ytapi.ytApiWrappers import getItemIds,moveSong
+
+from sync_dl_ytapi.credentials import credentialManager, credTask
     
 def pushLocalOrder(plPath):
     cfg.logger.info("Pushing Local Order to Remote...")
 
-    youtube = getYTResource()
+
+    youtube = credentialManager(credTask.getYTResource)
     
     with shelve.open(f"{plPath}/{cfg.metaDataName}", 'c',writeback=True) as metaData:
         url = metaData["url"]
@@ -34,3 +37,6 @@ def pushLocalOrder(plPath):
 
         moveSong(youtube,plId,songId,itemId,newIndex)
 
+def logout():
+    credentialManager(credTask.logout)
+    
