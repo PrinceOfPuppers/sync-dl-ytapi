@@ -67,15 +67,17 @@ def credentialManager(task):
 
     def getCredentials():
         if os.path.exists(credPath):
-
-            credentials = pickle.loads(getDecryptedProxy(credPath))
-
-
-            if credentials.refresh_token:
-                if credentials.expired:
-                    credentials.refresh(Request())
-            else:
+            try: # if credentials cannot be unencrypted, prompt login 
+                credentials = pickle.loads(getDecryptedProxy(credPath))
+            except:
                 credentials = newCredentials()
+
+            else: # credentials have been unencrypted 
+                if credentials.refresh_token:
+                    if credentials.expired:
+                        credentials.refresh(Request())
+                else:
+                    credentials = newCredentials()
 
         else:
             credentials=newCredentials()
