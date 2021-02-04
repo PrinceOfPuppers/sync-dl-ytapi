@@ -1,0 +1,11 @@
+__pycache__
+
+notepad.py
+
+sync_dl_ytapi.egg-info
+
+/build
+/dist
+sync_dl_ytapi/credentials
+
+/obfuscation
