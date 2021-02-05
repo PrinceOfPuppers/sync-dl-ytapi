@@ -33,9 +33,17 @@ Provides the --push-order option to sync-dl (along with potentially more in the 
 ```
 sync-dl --push-order PLAYLIST
 ```
-Will push the local order of PLAYLIST to youtube, reordering songs to match the local order (songs in remote but not in local will always stay after what they are currently after)
+This will prompt you to install sync-dl-ytapi if you have not already, and will
+print out the url to log in with google. Once you have done this it will
+push the local order of PLAYLIST to youtube, reordering songs to match the local order (songs in remote but not in local will always stay after what they are currently after)
 
 PLAYLIST is simply the name of the directory which contains the playlist. playlist directory will always be in current working directory unless a music directory is specified using the -l, --local-dir option to hard set a music directory.
+
+You can also logout (revoke the access tokens and delete the saved credentials) using
+the following command
+```
+sync-dl --logout
+```
 
 To see all options use the command:
 ```
@@ -47,7 +55,7 @@ To build for devlopment run:
 ```
 git clone https://github.com/PrinceOfPuppers/sync-dl-ytapi.git
 
-cd sync-dl
+cd sync-dl-ytapi
 
 pip install -e .
 ```
