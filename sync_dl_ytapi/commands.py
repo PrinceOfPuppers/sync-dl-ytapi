@@ -1,28 +1,33 @@
-
-
-
+import os
+import sys
+import pickle
+from math import ceil
 import shelve
 
 import sync_dl.config as cfg
 
 from sync_dl_ytapi.helpers import getPlId,pushOrderMoves
-from sync_dl_ytapi.ytApiWrappers import getItemIds,moveSong
+from sync_dl_ytapi.credentials import getCredentials,revokeTokens
 
-from sync_dl_ytapi.credentials import credentialManager, credTask
-    
+from sync_dl_ytapi.ytapiWrappers import getItemIds,moveSong
+
+
+
+# actual commands
 def pushLocalOrder(plPath):
     cfg.logger.info("Pushing Local Order to Remote...")
-
-
-    youtube = credentialManager(credTask.getYTResource)
     
+    credJson = getCredentials()
+    if not credJson:
+        return
+
     with shelve.open(f"{plPath}/{cfg.metaDataName}", 'c',writeback=True) as metaData:
         url = metaData["url"]
         localIds = metaData["ids"]
 
     plId = getPlId(url)
 
-    remoteIdPairs = getItemIds(youtube,plId)
+    remoteIdPairs = getItemIds(credJson,plId)
 
     remoteIds,remoteItemIds = zip(*remoteIdPairs)
 
@@ -35,8 +40,8 @@ def pushLocalOrder(plPath):
     for move in moves:
         newIndex, songId,itemId = move
 
-        moveSong(youtube,plId,songId,itemId,newIndex)
+        moveSong(credJson,plId,songId,itemId,newIndex)
 
 def logout():
-    credentialManager(credTask.logout)
+    revokeTokens()
     

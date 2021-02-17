@@ -1,4 +1,6 @@
 import re
+import html
+import requests
 
 import sync_dl.config as cfg
 
@@ -165,3 +167,63 @@ def pushOrderMoves(remoteIds,remoteItemIds,localIds):
     cfg.logger.debug('Moves To Push: \n'+'\n'.join( [str(move) for move in moves ] ))
     cfg.logger.debug('Groups Post Sort: \n'+'\n'.join([str(group) for group in groups ]))
     return moves
+
+
+
+def browserListener(url,timeout=600):
+    '''Opens browser at url and sets up localhost listener for response from browser after completion'''
+    #prompt = '\nMake sure you are using sync-dl which you Installed via pip.\nIf not, then this api key may be stolen!\n\nTerms of Service can be found here: http://sync-dl.com/licence \n\nPrivacy Policy can be found here: http://sync-dl.com/privacy-policy/ \n\nAuthentificate at:\n{url}'
+
+    from io import BytesIO
+    from http.server import HTTPServer,BaseHTTPRequestHandler
+    # start local server on localhost, port 37829 (to accept token from browser)
+    port = 37829
+    response = [None]
+
+
+    class Listener(BaseHTTPRequestHandler):
+        def _set_headers(self):
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+        def do_POST(self):
+            content_length = int(self.headers['Content-Length'])
+            response[0] = html.unescape(self.rfile.read(content_length).decode('utf-8'))
+            self.send_response(200)
+            self.end_headers()
+
+            #self.wfile.write(response.getvalue())
+        def do_OPTIONS(self):
+            self.send_response(200, "ok")
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+            self.send_header("Access-Control-Allow-Headers", "X-Requested-With")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type")
+            self.end_headers()
+        
+        def do_HEAD(self):
+            self._set_headers()
+
+    server_address = ('', port)
+
+    httpd = HTTPServer(server_address, Listener)
+
+    #listening server is setup, opening auth site in browser
+    import webbrowser
+    webbrowser.open_new_tab(url)
+
+    cfg.logger.info(f"Opening Authentification Page in Web Browser\n Go to This Website if it Fails to do so Automatically: {url}")
+
+    #listening for response from browser
+    httpd.timeout = timeout
+    httpd.handle_request()
+
+    return response[0]
+
+
+def getHttpErr(response):
+    try:
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        return err
