@@ -1,4 +1,0 @@
-graft sync_dl_ytapi/encrypted
-prune sync_dl_ytapi/encrypted/__pycache__
-prune sync_dl_ytapi/encrypted/pytransform/__pycache__
-prune obfuscation

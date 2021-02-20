@@ -1,9 +1,7 @@
 import sys
 import os
-import pickle
 import json
 import requests
-from enum import Enum
 
 from sync_dl import config as cfg
 

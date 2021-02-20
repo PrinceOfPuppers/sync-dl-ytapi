@@ -1,6 +1,5 @@
 __pycache__
 
-notepad
 notepad.py
 
 sync_dl_ytapi.egg-info
@@ -8,5 +7,3 @@ sync_dl_ytapi.egg-info
 /build
 /dist
 sync_dl_ytapi/credentials
-
-/obfuscation

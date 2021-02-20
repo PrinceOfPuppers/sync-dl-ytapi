@@ -1,7 +1,6 @@
 import os
 import sys
-import pickle
-from math import ceil
+
 import shelve
 
 import sync_dl.config as cfg
@@ -15,12 +14,12 @@ from sync_dl_ytapi.ytapiWrappers import getItemIds,moveSong
 
 # actual commands
 def pushLocalOrder(plPath):
-    cfg.logger.info("Pushing Local Order to Remote...")
-    
     credJson = getCredentials()
     if not credJson:
         return
-
+    
+    cfg.logger.info("Pushing Local Order to Remote...")
+    
     with shelve.open(f"{plPath}/{cfg.metaDataName}", 'c',writeback=True) as metaData:
         url = metaData["url"]
         localIds = metaData["ids"]

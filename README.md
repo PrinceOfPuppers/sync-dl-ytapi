@@ -59,4 +59,4 @@ cd sync-dl-ytapi
 
 pip install -e .
 ```
-This will build and install sync-dl in place, allowing you to work on the code without having to reinstall after changes
+This will build and install sync-dl in place, allowing you to work on the code without having to reinstall after changes, it will also install sync-dl as it is a dependancy
