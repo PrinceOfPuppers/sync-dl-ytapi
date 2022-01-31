@@ -8,7 +8,8 @@ import sync_dl.config as cfg
 from sync_dl_ytapi.helpers import getPlId,pushOrderMoves
 from sync_dl_ytapi.credentials import getCredentials,revokeTokens
 
-from sync_dl_ytapi.ytapiWrappers import getItemIds,moveSong
+from sync_dl_ytapi.ytapiWrappers import getItemIds,moveSong, removeSong, addSong
+from typing import Callable, Tuple, Union
 
 
 
@@ -43,4 +44,53 @@ def pushLocalOrder(plPath):
 
 def logout():
     revokeTokens()
-    
+
+def transferSong(credJson, destPlId: str, 
+                 songId:   str, srcPlItemId: str, 
+                 srcIndex: int, destIndex: int, 
+                 srcPlUrl: str, destPlUrl: str):
+
+    if( not addSong(credJson, destPlId, songId, destIndex, destPlUrl) ):
+        cfg.logger.error(f"Canceling Transfer of SongId: {songId}")
+        return False
+
+    if( not removeSong(credJson, songId, srcIndex, srcPlUrl, srcPlItemId) ):
+        cfg.logger.error(
+            f"Song was Added to Playlsit: {destPlUrl}\n"
+            f"But Not Removed From:       {srcPlUrl}"
+        )
+        return False
+
+    cfg.logger.info(f"Transfered SongId: {songId}")
+    return True
+
+
+
+def getPlAdder(plUrl: str) -> Union[Callable[[str, int], bool], None]:
+    credJson = getCredentials()
+    if not credJson:
+        return None
+
+    plId = getPlId(plUrl)
+
+    return lambda songId, index: addSong(credJson, plId, songId, index, plUrl)
+
+
+def getPlRemover(plUrl: str) -> Union[Tuple[Callable[[int], bool], list[str]], Tuple[None, None]]:
+    '''
+    returns function to remove remote songs from playlist by index, and list of remoteIds
+    indices are not changed due to subsequent removals
+    '''
+    credJson = getCredentials()
+    if not credJson:
+        return None, None
+
+    plId = getPlId(plUrl)
+
+    remoteIdPairs = getItemIds(credJson,plId)
+
+    remoteIds, remoteItemIds = zip(*remoteIdPairs)
+    remoteIds = list(remoteIds)
+
+    return lambda index: removeSong(credJson, remoteIds[index], plUrl, remoteItemIds[index]), remoteIds
+

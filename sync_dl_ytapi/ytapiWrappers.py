@@ -105,3 +105,62 @@ def moveSong(credJson, plId, songId, plItemId, index, attempts = 3):
     
     return True
 
+def removeSong(credJson, songId, plUrl, plItemId, attempts = 3):
+    deleteRequest = lambda: requests.delete(f'https://youtube.googleapis.com/youtube/v3/playlistItems?id={plItemId}',
+        headers = {
+            'Authorization':'Bearer '+credJson["token"],
+            'Accept':'application/json',
+            'Content-Type':'application/json',
+        })
+    
+    i=1
+    response = deleteRequest()
+
+    while not response.ok and i<attempts:
+        cfg.logger.debug(response.content)
+        cfg.logger.error(getHttpErr(response))
+
+        cfg.logger.error(f"Failed Attempt to Delete Song ID: {songId} of Playlist: {plUrl}")
+        cfg.logger.info(f"Retrying...")
+        response = deleteRequest()
+        i+=1
+
+    if not response.ok:
+        cfg.logger.error(f"Max Attempts Reached to Delete Song ID: {songId} of Playlist: {plUrl}")
+        return False
+
+    cfg.logger.debug(f"Deleted Song ID: {songId} from Playlist: {plUrl}")
+    return True
+
+
+def addSong(credJson, plId, songId, index, plUrl, attempts = 3):
+    postRequest = lambda: requests.post('https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet',
+        headers = {
+            'Authorization':'Bearer '+credJson["token"],
+            'Accept':'application/json',
+            'Content-Type':'application/json',
+        },
+        data = f'{{"snippet": {{"playlistId": "{plId}","position": {index},"resourceId": {{"kind": "youtube#video","videoId": "{songId}" }} }} }}'
+        )
+
+    i=1
+    response = postRequest()
+
+    while not response.ok and i<attempts:
+        cfg.logger.debug(response.content)
+        cfg.logger.error(getHttpErr(response))
+
+        cfg.logger.error(f"Failed attempt to Add Song ID: {songId} to Index: {index} of Playlist: {plUrl}")
+        cfg.logger.info(f"Retrying...")
+        response = postRequest()
+        i+=1
+
+
+    if not response.ok:
+
+        cfg.logger.error(f"Max Attempts Reached to Add Song ID: {songId} to Index: {index} of Playlist: {plUrl}")
+        return False
+
+    title = json.loads(response.content)["snippet"]["title"]
+    cfg.logger.debug(f'Added Song: {title} to Index: {index} of Playlist: {plUrl}')
+    return True
