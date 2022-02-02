@@ -42,7 +42,12 @@ def getItemIds(credJson,plId):
         return json.loads(response.content)
     
 
-    response = makeRequest('',0)
+    try:
+        response = makeRequest('',0)
+    except Exception as e:
+        cfg.logger.debug(e)
+        return []
+
     if not response:
         return []
 
@@ -84,7 +89,11 @@ def moveSong(credJson, plId, songId, plItemId, index, attempts = 3):
         )
     
     i=1
-    response = putRequest()
+    try:
+        response = putRequest()
+    except Exception as e:
+        cfg.logger.debug(e)
+        return False
 
     while not response.ok and i<attempts:
         cfg.logger.debug(response.content)
@@ -114,7 +123,12 @@ def removeSong(credJson, songId, plUrl, plItemId, attempts = 3):
         })
     
     i=1
-    response = deleteRequest()
+
+    try:
+        response = deleteRequest()
+    except Exception as e:
+        cfg.logger.debug(e)
+        return False
 
     while not response.ok and i<attempts:
         cfg.logger.debug(response.content)
@@ -144,7 +158,11 @@ def addSong(credJson, plId, songId, index, plUrl, attempts = 3):
         )
 
     i=1
-    response = postRequest()
+    try:
+        response = postRequest()
+    except Exception as e:
+        cfg.logger.debug(e)
+        return False
 
     while not response.ok and i<attempts:
         cfg.logger.debug(response.content)
