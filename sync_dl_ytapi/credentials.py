@@ -1,4 +1,3 @@
-import sys
 import os
 import json
 import requests
@@ -86,6 +85,8 @@ def revokeTokens():
     if os.path.exists(credPath):
 
         credJson = getCredentials()
+        if credJson is None:
+            return
         accessToken = credJson["token"]
         response = requests.post('https://oauth2.googleapis.com/revoke',
             params={'token': accessToken},

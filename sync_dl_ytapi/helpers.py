@@ -7,6 +7,7 @@ import sync_dl.config as cfg
 
 def getPlId(plUrl):
     match = re.search(cfg.plIdRe,plUrl)
+    assert match is not None
     return match.group()[5:]
     
 
@@ -174,7 +175,6 @@ def browserListener(url,timeout=600):
     '''Opens browser at url and sets up localhost listener for response from browser after completion'''
     #prompt = '\nMake sure you are using sync-dl which you Installed via pip.\nIf not, then this api key may be stolen!\n\nTerms of Service can be found here: http://sync-dl.com/licence \n\nPrivacy Policy can be found here: http://sync-dl.com/privacy-policy/ \n\nAuthentificate at:\n{url}'
 
-    from io import BytesIO
     from http.server import HTTPServer,BaseHTTPRequestHandler
     # start local server on localhost, port 37829 (to accept token from browser)
     port = 37829

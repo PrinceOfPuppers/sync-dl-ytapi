@@ -1,6 +1,3 @@
-import os
-import sys
-
 import shelve
 
 import sync_dl.config as cfg
@@ -28,6 +25,8 @@ def pushLocalOrder(plPath):
     plId = getPlId(url)
 
     remoteIdPairs = getItemIds(credJson,plId)
+    if len(remoteIdPairs) == 0:
+        return
 
     remoteIds,remoteItemIds = zip(*remoteIdPairs)
 
@@ -35,35 +34,16 @@ def pushLocalOrder(plPath):
 
     moves = pushOrderMoves(remoteIds,remoteItemIds,localIds)
 
-
-
     for move in moves:
         newIndex, songId,itemId = move
 
-        moveSong(credJson,plId,songId,itemId,newIndex)
+        if not moveSong(credJson,plId,songId,itemId,newIndex):
+            cfg.logger.error("Ending PushLocalOrder Prematurly")
+            return
+
 
 def logout():
     revokeTokens()
-
-def transferSong(credJson, destPlId: str, 
-                 songId:   str, srcPlItemId: str, 
-                 srcIndex: int, destIndex: int, 
-                 srcPlUrl: str, destPlUrl: str):
-
-    if( not addSong(credJson, destPlId, songId, destIndex, destPlUrl) ):
-        cfg.logger.error(f"Canceling Transfer of SongId: {songId}")
-        return False
-
-    if( not removeSong(credJson, songId, srcIndex, srcPlUrl, srcPlItemId) ):
-        cfg.logger.error(
-            f"Song was Added to Playlsit: {destPlUrl}\n"
-            f"But Not Removed From:       {srcPlUrl}"
-        )
-        return False
-
-    cfg.logger.info(f"Transfered SongId: {songId}")
-    return True
-
 
 
 def getPlAdder(plUrl: str) -> Union[Callable[[str, int], bool], None]:
@@ -88,6 +68,8 @@ def getPlRemover(plUrl: str) -> Union[Tuple[Callable[[int], bool], list[str]], T
     plId = getPlId(plUrl)
 
     remoteIdPairs = getItemIds(credJson,plId)
+    if len(remoteIdPairs) == 0:
+        return None, None
 
     remoteIds, remoteItemIds = zip(*remoteIdPairs)
     remoteIds = list(remoteIds)

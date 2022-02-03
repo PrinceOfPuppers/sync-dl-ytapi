@@ -6,7 +6,7 @@ from sync_dl_ytapi.helpers import getHttpErr
 import sync_dl.config as cfg
 
 
-def getItemIds(credJson,plId):    
+def getItemIds(credJson,plId):
     requestURL = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=25&pageToken={pageToken}&playlistId={plId}"
     
     def makeRequest(pageToken,pageNum, attempts = 3):
@@ -49,6 +49,7 @@ def getItemIds(credJson,plId):
         return []
 
     if not response:
+        cfg.logger.error("Issue Getting Playlist Infomration (Potentially Out of Quota for Today)")
         return []
 
     ids = [] # contains tuples (songId, plItemId)
@@ -64,6 +65,7 @@ def getItemIds(credJson,plId):
         
         response = makeRequest(response['nextPageToken'],i)
         if not response:
+            cfg.logger.error("Issue Getting Playlist Infomration (Potentially Out of Quota for Today)")
             return []
 
         for item in response['items']:
@@ -106,7 +108,7 @@ def moveSong(credJson, plId, songId, plItemId, index, attempts = 3):
 
 
     if not response.ok:
-        cfg.logger.error(f"Max Attempts to Move Song ID: {songId} to Index: {index} Reached")
+        cfg.logger.error(f"Max Attempts to Move Song ID: {songId} to Index: {index} Reached (Potentially Out of Quota for Today)")
         return False
     
     title = json.loads(response.content)["snippet"]["title"]
@@ -140,7 +142,7 @@ def removeSong(credJson, songId, plUrl, plItemId, attempts = 3):
         i+=1
 
     if not response.ok:
-        cfg.logger.error(f"Max Attempts Reached to Delete Song ID: {songId} of Playlist: {plUrl}")
+        cfg.logger.error(f"Max Attempts Reached to Delete Song ID: {songId} of Playlist: {plUrl} (Potentially Out of Quota for Today)")
         return False
 
     cfg.logger.debug(f"Deleted Song ID: {songId} from Playlist: {plUrl}")
@@ -175,8 +177,7 @@ def addSong(credJson, plId, songId, index, plUrl, attempts = 3):
 
 
     if not response.ok:
-
-        cfg.logger.error(f"Max Attempts Reached to Add Song ID: {songId} to Index: {index} of Playlist: {plUrl}")
+        cfg.logger.error(f"Max Attempts Reached to Add Song ID: {songId} to Index: {index} of Playlist: {plUrl} (Potentially Out of Quota for Today)")
         return False
 
     title = json.loads(response.content)["snippet"]["title"]
