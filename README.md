@@ -26,10 +26,11 @@ Using any commands in sync-dl which require this addon will prompt the user to i
 
 
 # ABOUT
-Provides the --push-order option to sync-dl (along with potentially more in the future)
+Provides sync-dl the ability to edit remote playlists on youtube through the youtube-api
 
 
 # Usage
+## Push Order Command:
 ```
 sync-dl ytapi --push-order PLAYLIST
 ```
