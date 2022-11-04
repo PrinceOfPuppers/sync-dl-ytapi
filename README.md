@@ -31,7 +31,7 @@ Provides the --push-order option to sync-dl (along with potentially more in the 
 
 # Usage
 ```
-sync-dl --push-order PLAYLIST
+sync-dl ytapi --push-order PLAYLIST
 ```
 This will prompt you to install sync-dl-ytapi if you have not already, and will
 print out the url to log in with google. Once you have done this it will
@@ -42,12 +42,23 @@ PLAYLIST is simply the name of the directory which contains the playlist. playli
 You can also logout (revoke the access tokens and delete the saved credentials) using
 the following command
 ```
-sync-dl --logout
+sync-dl ytapi --logout
 ```
 
 To see all options use the command:
 ```
-sync-dl -h
+sync-dl ytapi -h
+```
+
+## Transfer Command:
+```
+sync-dl ytapi transfer [OPTINOS] SRC_PLAYLIST DEST_PLAYLIST
+```
+Transfers songs between `SRC_PLAYLIST` and `DEST_PLAYLIST` on both local and remote, moving a single song using `-t SI DI` or a range of songs `-r S1 S2 DI`
+
+To see all options as well as a more indepth description use the command:
+```
+sync-dl ytapi transfer -h
 ```
 
 # DEVLOPMENT
