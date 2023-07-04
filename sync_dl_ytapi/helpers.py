@@ -22,8 +22,8 @@ def oldToNewPushOrder(remoteIds, localIds):
 
 
     # Removes all localIds which arent in remoteIds (we arent going to upload songs)
-    for i,localId in enumerate(localIds):
-        if localId not in remoteIds:
+    for i in reversed(range(len(localIds))):
+        if localIds[i] not in remoteIds:
             del localIds[i]
 
     lenRemote = len(remoteIds)
