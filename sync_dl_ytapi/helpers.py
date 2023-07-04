@@ -11,20 +11,17 @@ def getPlId(plUrl):
     return match.group()[5:]
     
 
+
+
 def oldToNewPushOrder(remoteIds, localIds):
     '''
     Used in pushLocalOrder
     '''
     
     blankingStr = ''
-    localIds = [localId for localId in localIds]
     remoteIds = [remoteId for remoteId in remoteIds]
-
-
     # Removes all localIds which arent in remoteIds (we arent going to upload songs)
-    for i in reversed(range(len(localIds))):
-        if localIds[i] not in remoteIds:
-            del localIds[i]
+    localIds = [id for id in localIds if id in remoteIds]
 
     lenRemote = len(remoteIds)
     oldToNew=[-1]*lenRemote
@@ -46,7 +43,11 @@ def oldToNewPushOrder(remoteIds, localIds):
 
         localId = localIds.pop(0)
 
-        oldIndex = remoteIds.index(localId)
+        try:
+            oldIndex = remoteIds.index(localId)
+        except:
+            # duplicate local id that is not duplicated in remoteIds
+            continue
         remoteIds[oldIndex] = blankingStr
 
         oldToNew[oldIndex] = newIndex
